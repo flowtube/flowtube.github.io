@@ -218,6 +218,17 @@
       <input type="text" id="video_url" x-model="video_url" width="60%"/>
     </p>
 
+    Url history:
+    <ul>
+    <template x-for="item in url_history" :key="item">
+      <li>
+        <span x-text="item['title']"></span>
+        <span x-text="item['url']"></span>
+        <button @click="video_url=item['url'] ; loadVideoFromInput()">load</button>
+      </li>
+    </template>
+    </ul>
+
     <button @click="loadVideoFromInput()">Apply</button>
   </div>
 </div>
@@ -360,6 +371,7 @@ function data() {
     counter: null,
     timer_action: 'Start',
     video_url: 'https://www.youtube.com/watch?v=5yx6BWlEVcY', //ChillHop caffee
+    url_history: [],
     start_text: '<i class="material-icons">play_arrow</i>',
     pause_text: '<i class="material-icons">pause</i>',
 
@@ -378,6 +390,9 @@ function data() {
 
       if (window.localStorage.getItem('video_url')) {
         this.video_url = window.localStorage.getItem('video_url');
+      }
+      if (window.localStorage.getItem('url_history')) {
+        this.video_url = JSON.parse(window.localStorage.getItem('url_history'));
       }
 
       loadVideoByUrl(this.video_url);
@@ -450,6 +465,12 @@ function data() {
         window.localStorage.setItem('video_url', url);
 
         loadVideoByUrl(url);
+
+        this.url_history.push({
+          url: url, 
+          title: player.getVideoData().title,
+        })
+        window.localStorage.setItem('url_history', JSON.stringify(this.url_history));
     },
   };
 }
